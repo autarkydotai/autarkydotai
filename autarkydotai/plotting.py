@@ -27,17 +27,17 @@ scatter()
 
 __all__ = ['corr_heatmap', 'scatter']
 
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-import seaborn as sns
+import matplotlib.pyplot as _plt
+import numpy as _np
+import pandas as _pd
+import seaborn as _sns
 
 
 try:
-    plt.style.use('autarkydotai')
+    _plt.style.use('autarkydotai')
 except OSError:
-    plt.style.use(['seaborn-poster', 'seaborn-whitegrid'])
-    plt.rcParams['figure.figsize'] = (18, 8)
+    _plt.style.use(['seaborn-poster', 'seaborn-whitegrid'])
+    _plt.rcParams['figure.figsize'] = (18, 8)
 
 
 def corr_heatmap(data, cmap=None, method='pearson', min_periods=1, tril=True):
@@ -68,17 +68,17 @@ def corr_heatmap(data, cmap=None, method='pearson', min_periods=1, tril=True):
     tril : bool, default=True
         Whether to mask the upper triangle of the correlation matrix.
     """
-    if not isinstance(data, pd.DataFrame):
-        data = pd.DataFrame(data)
+    if not isinstance(data, _pd.DataFrame):
+        data = _pd.DataFrame(data)
     if data.shape[1] < 2:
         raise ValueError("'data' must contain at least 2 columns")
 
     corr = data.corr(method=method, min_periods=min_periods)
     corr = corr.multiply(100)
-    mask = np.triu(np.ones_like(corr, dtype=bool)) if tril else None
-    sns.heatmap(corr, cmap=cmap, annot=True, fmt='.0f',
-                cbar_kws={'label': '%'}, mask=mask)
-    plt.show()
+    mask = _np.triu(_np.ones_like(corr, dtype=bool)) if tril else None
+    _sns.heatmap(corr, cmap=cmap, annot=True, fmt='.0f',
+                 cbar_kws={'label': '%'}, mask=mask)
+    _plt.show()
 
 
 def scatter(x, y, cmap='jet', xlabel=None, ylabel=None):
@@ -99,29 +99,29 @@ def scatter(x, y, cmap='jet', xlabel=None, ylabel=None):
     ylabel : str, optional
         Label to use for the y-axis.
     """
-    if (not isinstance(x, (pd.Series, pd.DataFrame))
-            or not isinstance(y, (pd.Series, pd.DataFrame))):
+    if (not isinstance(x, (_pd.Series, _pd.DataFrame))
+            or not isinstance(y, (_pd.Series, _pd.DataFrame))):
         raise ValueError("Both 'x' and 'y' must be a pandas Series "
                          "or pandas DataFrame")
     if len(x) != len(y):
         raise ValueError("'x' and 'y' must be the same size")
     if not x.index.is_all_dates:
-        x.index = pd.to_datetime(x.index)
+        x.index = _pd.to_datetime(x.index)
     if not y.index.is_all_dates:
-        y.index = pd.to_datetime(y.index)
+        y.index = _pd.to_datetime(y.index)
     x = x.sort_index()
     y = y.sort_index()
 
-    colors = np.linspace(0, 1, len(x))
-    cm = plt.get_cmap(cmap)
-    sc = plt.scatter(x, y, c=colors, cmap=cm, lw=0)
+    colors = _np.linspace(0, 1, len(x))
+    cm = _plt.get_cmap(cmap)
+    sc = _plt.scatter(x, y, c=colors, cmap=cm, lw=0)
     step = 1 if len(x) < 20 else len(x) // 10
     ticks = colors[::step]
     ticklabels = [str(val.date()) for val in x[::step].index]
-    cb = plt.colorbar(sc, ticks=ticks)
+    cb = _plt.colorbar(sc, ticks=ticks)
     cb.ax.set_yticklabels(ticklabels)
-    plt.axline((0, 0), slope=1, c='k', label=r'$y=x$')
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
-    plt.legend(loc='upper left')
-    plt.show()
+    _plt.axline((0, 0), slope=1, c='k', label=r'$y=x$')
+    _plt.xlabel(xlabel)
+    _plt.ylabel(ylabel)
+    _plt.legend(loc='upper left')
+    _plt.show()

@@ -59,11 +59,11 @@ ReprMixin()
 
 __all__ = ['PickleMixin', 'ReprMixin']
 
-import inspect
-import os
-import pickle
-import re
-import sklearn
+import inspect as _inspect
+import os as _os
+import pickle as _pickle
+import re as _re
+import sklearn as _sklearn
 
 
 class PickleMixin:
@@ -71,7 +71,7 @@ class PickleMixin:
 
     def _save(self, filename):
         with open(filename, 'wb') as f:
-            pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
+            _pickle.dump(self, f, _pickle.HIGHEST_PROTOCOL)
 
     @classmethod
     def load(cls, filename):
@@ -83,7 +83,7 @@ class PickleMixin:
             The pickle file to be loaded.
         """
         with open(filename, 'rb') as f:
-            return pickle.load(f)
+            return _pickle.load(f)
 
     def save(self, filename='Untitled.pickle'):
         """Save object as a pickle.
@@ -96,7 +96,7 @@ class PickleMixin:
         filename : str, default='Untitled.pickle'
             The file name under which to save the object.
         """
-        if os.path.exists(filename):
+        if _os.path.exists(filename):
             user_input = input(f"WARNING: '{filename}' already exists. Are "
                                f"you sure you want to overwrite it ([y]/n)? ")
             if user_input.lower() in ['y', 'yes', '']:
@@ -136,8 +136,8 @@ class ReprMixin:
             # - (pattern){n} matches n repetitions of pattern
             # - \s*\S matches a non-blank char following zero or more
             #   blanks.
-            left_lim = re.match(regex, repr_).end()
-            right_lim = re.match(regex, repr_[::-1]).end()
+            left_lim = _re.match(regex, repr_).end()
+            right_lim = _re.match(regex, repr_[::-1]).end()
             if '\n' in repr_[left_lim:-right_lim]:
                 # The left side and right side aren't on the same line.
                 # To avoid weird cuts (e.g. 'categoric...ore'), we need
@@ -147,7 +147,7 @@ class ReprMixin:
                 # handle_unknown='ignore'.
                 # So we add [^\n]*\n, which matches until the next \n.
                 regex += r'[^\n]*\n'
-                right_lim = re.match(regex, repr_[::-1]).end()
+                right_lim = _re.match(regex, repr_[::-1]).end()
             if left_lim + len('...') < len(repr_) - right_lim:
                 # Only add ellipses if they result in a shorter repr.
                 repr_ = repr_[:left_lim] + '...' + repr_[-right_lim:]
@@ -174,7 +174,7 @@ class ReprMixin:
         if init is object.__init__:
             # Class has no explicit constructor.
             return None
-        return inspect.signature(init)
+        return _inspect.signature(init)
 
     def get_params(self, deep=True):
         """Get constructor arguments for this object.
@@ -190,4 +190,4 @@ class ReprMixin:
         dict
             Constructor argument names mapped to their values.
         """
-        return sklearn.base.BaseEstimator.get_params(self, deep)
+        return _sklearn.base.BaseEstimator.get_params(self, deep)

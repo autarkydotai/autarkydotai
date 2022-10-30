@@ -213,8 +213,9 @@ print_table()
 
 __all__ = ['print_table']
 
-import pandas as pd
-from IPython.display import display, HTML
+import pandas as _pd
+from IPython.display import display as _display
+from IPython.display import HTML as _HTML
 
 
 def print_table(table, colspan=False, float_format=None, header_rows=None,
@@ -240,8 +241,8 @@ def print_table(table, colspan=False, float_format=None, header_rows=None,
     name : str, optional
         Table name to display in upper-left corner.
     """
-    if isinstance(table, pd.Series):
-        table = pd.DataFrame(table)
+    if isinstance(table, _pd.Series):
+        table = _pd.DataFrame(table)
     if name is not None:
         table.columns.name = name
 
@@ -264,4 +265,4 @@ def print_table(table, colspan=False, float_format=None, header_rows=None,
         # Inject the new HTML.
         html = html.replace('<thead>', '<thead>' + rows)
 
-    display(HTML(html))
+    _display(_HTML(html))
