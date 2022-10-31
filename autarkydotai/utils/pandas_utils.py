@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # Copyright 2018 Quantopian, Inc.
 #
 # Author: Arnold Salas <asalas@autarky.ai> (autarkydotai specific changes)

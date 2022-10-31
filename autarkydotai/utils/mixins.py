@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # Copyright (c) 2007-2022 The scikit-learn developers.
 # All rights reserved.
 #
