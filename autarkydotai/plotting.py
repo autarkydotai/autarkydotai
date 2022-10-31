@@ -32,7 +32,7 @@ import seaborn as _sns
 
 
 try:
-    _plt.style.use('autarkydotai')
+    _plt.style.use('https://raw.githubusercontent.com/autarkydotai/dotfiles/main/dotfiles/.config/matplotlib/stylelib/autarkydotai.mplstyle')
 except OSError:
     _plt.style.use(['seaborn-poster', 'seaborn-whitegrid'])
     _plt.rcParams['figure.figsize'] = (18, 8)
