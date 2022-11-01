@@ -216,8 +216,8 @@ from IPython.display import display as _display
 from IPython.display import HTML as _HTML
 
 
-def print_table(table, colspan=False, float_format=None, header_rows=None,
-                name=None):
+def print_table(*, colspan=False, float_format=None, header_rows=None,
+                name=None, table):
     """Pretty-print a pandas Series/DataFrame.
 
     Uses HTML output if running inside Jupyter Notebook, otherwise
@@ -225,8 +225,6 @@ def print_table(table, colspan=False, float_format=None, header_rows=None,
 
     Parameters
     ----------
-    table : pandas.Series or pandas.DataFrame
-        Table to pretty-print.
     colspan : bool, default=False
         Whether to cause the header rows (if any) to span over
         multiple columns.
@@ -238,9 +236,11 @@ def print_table(table, colspan=False, float_format=None, header_rows=None,
         Extra rows to display at the top of the table.
     name : str, optional
         Table name to display in upper-left corner.
+    table : pandas.Series or pandas.DataFrame
+        Table to pretty-print.
     """
     if isinstance(table, _pd.Series):
-        table = _pd.DataFrame(table)
+        table = _pd.DataFrame(data=table)
     if name is not None:
         table.columns.name = name
 
@@ -249,8 +249,8 @@ def print_table(table, colspan=False, float_format=None, header_rows=None,
         # Check if text needs to span over multiple columns.
         if colspan:
             # Count the number of columns for the text to span.
-            n_cols = html.split('<thead>')[1].split(
-                '</thead>')[0].count('<th>')
+            n_cols = html.split(sep='<thead>')[1].split(
+                sep='</thead>')[0].count(sub='<th>')
         else:
             n_cols = 0
         # Generate the HTML for the extra rows.
@@ -261,6 +261,6 @@ def print_table(table, colspan=False, float_format=None, header_rows=None,
                      f'  <td colspan={n_cols}>{value}</td>'
                      f'</tr>')
         # Inject the new HTML.
-        html = html.replace('<thead>', '<thead>' + rows)
+        html = html.replace(old='<thead>', new='<thead>' + rows)
 
-    _display(_HTML(html))
+    _display(_HTML(data=html))
