@@ -102,6 +102,12 @@ def scatter(*, cmap='jet', x, xlabel=None, y, ylabel=None):
             or not isinstance(y, (_pd.Series, _pd.DataFrame))):
         raise ValueError("Both 'x' and 'y' must be a pandas Series "
                          "or pandas DataFrame")
+    if x.empty or y.empty:
+        raise ValueError("'x' and 'y' cannot be empty")
+    x = x.squeeze()
+    y = y.squeeze()
+    if not isinstance(x, _pd.Series) or not isinstance(y, _pd.Series):
+        raise ValueError("'x' and 'y' must be 1D")
     if len(x) != len(y):
         raise ValueError("'x' and 'y' must be the same size")
     if not x.index.is_all_dates:
