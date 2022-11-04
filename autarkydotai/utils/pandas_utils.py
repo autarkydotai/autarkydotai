@@ -261,6 +261,6 @@ def print_table(*, colspan=False, float_format=None, header_rows=None,
                      f'  <td colspan={n_cols}>{value}</td>'
                      f'</tr>')
         # Inject the new HTML.
-        html = html.replace(old='<thead>', new='<thead>' + rows)
+        html = html.replace('<thead>', '<thead>' + rows)
 
     _display(_HTML(data=html))
