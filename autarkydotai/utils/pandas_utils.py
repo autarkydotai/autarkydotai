@@ -216,8 +216,8 @@ from IPython.display import display as _display
 from IPython.display import HTML as _HTML
 
 
-def print_table(*, colspan=False, float_format=None, header_rows=None,
-                name=None, table):
+def print_table(*, colspan=False, float_format='{0:.2%}'.format,
+                header_rows=None, name=None, table):
     """Pretty-print a pandas Series/DataFrame.
 
     Uses HTML output if running inside Jupyter Notebook, otherwise
