@@ -67,12 +67,12 @@ import sklearn as _sklearn
 class PickleMixin:
     """Mix-in class to save/load class instances as pickled data."""
 
-    def _save(self, *, filename):
-        with open(file=filename, mode='wb') as f:
-            _pickle.dump(obj=self, file=f, protocol=_pickle.HIGHEST_PROTOCOL)
+    def _save(self, filename):
+        with open(filename, mode='wb') as f:
+            _pickle.dump(self, f, protocol=_pickle.HIGHEST_PROTOCOL)
 
     @classmethod
-    def load(cls, *, filename):
+    def load(cls, filename):
         """Load pickled object.
 
         Parameters
@@ -80,10 +80,10 @@ class PickleMixin:
         filename : str
             The pickle file to be loaded.
         """
-        with open(file=filename, mode='rb') as f:
-            return _pickle.load(file=f)
+        with open(filename, mode='rb') as f:
+            return _pickle.load(f)
 
-    def save(self, *, filename='Untitled.pickle'):
+    def save(self, filename='Untitled.pickle'):
         """Save object as a pickle.
 
         Prompts the user for a 'yes'/'no' answer to avoid accidental
@@ -94,16 +94,16 @@ class PickleMixin:
         filename : str, default='Untitled.pickle'
             The file name under which to save the object.
         """
-        if _os.path.exists(path=filename):
+        if _os.path.exists(filename):
             prompt = (f"WARNING: '{filename}' already exists. Are you sure "
                       f"you want to overwrite it ([y]/n)? ")
-            user_input = input(prompt=prompt)
+            user_input = input(prompt)
             if user_input.lower() in ['y', 'yes', '']:
-                self._save(filename=filename)
+                self._save(filename)
             else:
                 pass
         else:
-            self._save(filename=filename)
+            self._save(filename)
 
 
 class ReprMixin:
@@ -111,7 +111,7 @@ class ReprMixin:
     instance objects.
     """
 
-    def __repr__(self, *, N_CHAR_MAX=700):
+    def __repr__(self, N_CHAR_MAX=700):
         # N_CHAR_MAX is the (approximate) maximum number of non-blank
         # characters to render. We pass it as an optional parameter to
         # ease the tests.
@@ -123,7 +123,7 @@ class ReprMixin:
         # force ellipses when there are a lot of non-blank characters.
         pp = _PrettyPrinter(compact=True,
                             n_max_elements_to_show=N_MAX_ELEMENTS_TO_SHOW)
-        repr_ = pp.pformat(object=self)
+        repr_ = pp.pformat(self)
         n_nonblank = len(''.join(repr_.split()))
         if n_nonblank > N_CHAR_MAX:
             # Approx number of characters to keep on both ends.
@@ -135,8 +135,8 @@ class ReprMixin:
             # - (pattern){n} matches n repetitions of pattern
             # - \s*\S matches a non-blank char following zero or more
             #   blanks.
-            left_lim = _re.match(pattern=regex, string=repr_).end()
-            right_lim = _re.match(pattern=regex, string=repr_[::-1]).end()
+            left_lim = _re.match(regex, repr_).end()
+            right_lim = _re.match(regex, repr_[::-1]).end()
             if '\n' in repr_[left_lim:-right_lim]:
                 # The left side and right side aren't on the same line.
                 # To avoid weird cuts (e.g. 'categoric...ore'), we need
@@ -146,7 +146,7 @@ class ReprMixin:
                 # handle_unknown='ignore'.
                 # So we add [^\n]*\n, which matches until the next \n.
                 regex += r'[^\n]*\n'
-                right_lim = _re.match(pattern=regex, string=repr_[::-1]).end()
+                right_lim = _re.match(regex, repr_[::-1]).end()
             if left_lim + len('...') < len(repr_) - right_lim:
                 # Only add ellipses if they result in a shorter repr.
                 repr_ = repr_[:left_lim] + '...' + repr_[-right_lim:]
@@ -173,9 +173,9 @@ class ReprMixin:
         if init is object.__init__:
             # Class has no explicit constructor.
             return None
-        return _inspect.signature(obj=init)
+        return _inspect.signature(init)
 
-    def get_params(self, *, deep=True):
+    def get_params(self, deep=True):
         """Get constructor arguments for this object.
 
         Parameters

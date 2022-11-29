@@ -38,19 +38,19 @@ except OSError:
     _plt.rcParams['figure.figsize'] = (18, 8)
 
 
-def corr_heatmap(*, cmap=None, data, method='pearson', min_periods=1,
+def corr_heatmap(data, *, cmap=None, method='pearson', min_periods=1,
                  tril=True):
     """Plot the correlation matrix of `data` as a seaborn heatmap.
 
     Parameters
     ----------
-    cmap : str or `~matplotlib.colors.Colormap`, or list of colors,
-           optional
-        The mapping from data values to color space.
     data : `~pandas.DataFrame`
         The rectangular data set on which to compute the pairwise
         column correlations. The index/column information will be
         used to label the axes of the heatmap chart.
+    cmap : str or `~matplotlib.colors.Colormap`, or list of colors,
+           optional
+        The mapping from data values to color space.
     method : {'pearson', 'kendall', 'spearman'} or callable
         Method of correlation:
         * pearson - standard Pearson correlation coefficient
@@ -68,31 +68,31 @@ def corr_heatmap(*, cmap=None, data, method='pearson', min_periods=1,
         Whether to mask the upper triangle of the correlation matrix.
     """
     if not isinstance(data, _pd.DataFrame):
-        data = _pd.DataFrame(data=data)
+        data = _pd.DataFrame(data)
     if data.shape[1] < 2:
         raise ValueError("'data' must contain at least 2 columns")
 
     corr = data.corr(method=method, min_periods=min_periods)
-    corr = corr.multiply(other=100)
-    mask = _np.triu(m=_np.ones_like(a=corr, dtype=bool)) if tril else None
-    _sns.heatmap(data=corr, cmap=cmap, annot=True, fmt='.0f',
+    corr = corr.multiply(100)
+    mask = _np.triu(_np.ones_like(corr, dtype=bool)) if tril else None
+    _sns.heatmap(corr, cmap=cmap, annot=True, fmt='.0f',
                  cbar_kws={'label': '%'}, mask=mask)
     _plt.show()
 
 
-def scatter(*, cmap='jet', x, xlabel=None, y, ylabel=None):
+def scatter(x, y, *, cmap='jet', xlabel=None, ylabel=None):
     """Draw a scatter plot of `y` vs `x`.
 
     Adds a colorbar to indicate the date each point corresponds to.
 
     Parameters
     ----------
+    x, y : `~pandas.Series` or `~pandas.DataFrame`
+        The data to plot. Index values must only consist of dates.
     cmap : str or `~matplotlib.colors.Colormap`, default='jet'
         A `~matplotlib.colors.Colormap` instance or registered
         colormap name, passed as the `cmap` argument to
         :func:`~matplotlib.pyplot.scatter`.
-    x, y : `~pandas.Series` or `~pandas.DataFrame`
-        The data to plot. Index values must only consist of dates.
     xlabel : str, optional
         Label to use for the x-axis.
     ylabel : str, optional
@@ -111,24 +111,24 @@ def scatter(*, cmap='jet', x, xlabel=None, y, ylabel=None):
     if len(x) != len(y):
         raise ValueError("'x' and 'y' must be the same size")
     if not x.index.is_all_dates:
-        x.index = _pd.to_datetime(arg=x.index)
+        x.index = _pd.to_datetime(x.index)
     if not y.index.is_all_dates:
-        y.index = _pd.to_datetime(arg=y.index)
+        y.index = _pd.to_datetime(y.index)
     x = x.sort_index()
     y = y.sort_index()
 
-    colors = _np.linspace(start=0, stop=1, num=len(x))
-    cm = _plt.get_cmap(name=cmap)
-    sc = _plt.scatter(x=x, y=y, c=colors, cmap=cm, linewidths=0)
+    colors = _np.linspace(0, 1, num=len(x))
+    cm = _plt.get_cmap(cmap)
+    sc = _plt.scatter(x, y, c=colors, cmap=cm, linewidths=0)
     step = 1 if len(x) < 20 else len(x) // 10
     ticks = colors[::step]
     ticklabels = [str(val.date()) for val in x[::step].index]
     cb = _plt.colorbar(mappable=sc, ticks=ticks)
-    cb.ax.set_yticklabels(labels=ticklabels)
-    _plt.axline(xy1=(0, 0), slope=1, c='k', label=r'$y=x$')
-    r = x.corr(other=y, method='pearson')
+    cb.ax.set_yticklabels(ticklabels)
+    _plt.axline((0, 0), slope=1, c='k', label=r'$y=x$')
+    r = x.corr(y, method='pearson')
     _plt.plot([], [], ' ', label=f"Pearson's r = {r:.2%}")
-    _plt.xlabel(xlabel=xlabel or x.name)
-    _plt.ylabel(ylabel=ylabel or y.name)
+    _plt.xlabel(xlabel or x.name)
+    _plt.ylabel(ylabel or y.name)
     _plt.legend(loc='upper left')
     _plt.show()
