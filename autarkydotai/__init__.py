@@ -1,3 +1,3 @@
-from autarkydotai import plotting, utils
+from autarkydotai import data, plotting, utils
 
-__all__ = ['plotting', 'utils']
+__all__ = ['data', 'plotting', 'utils']
